@@ -1,0 +1,16 @@
+Restaurant Organiser
+
+Meal:
+- id (auto-generated)
+- name
+- description
+- category (breakfast, side dishes, starters, main course, dessert)
+- price
+
+Add meal
+Delete meal (by ID)
+Update meal (by ID)
+Find meal (by name)
+Show menu
+
+
