@@ -3,7 +3,7 @@ package com.example.restaurant_organiser.domain;
 /**
 Domain class Meal which describes a meal product
  */
-public class Meal {
+public class Meal implements Comparable<Meal>{
 
     private int ID;
     private String name, category, description;
@@ -23,6 +23,10 @@ public class Meal {
         this.category = category;
         this.description = description;
         this.price = price;
+    }
+
+    public Meal(int id){
+        this.ID = id;
     }
 
     /**
@@ -105,4 +109,18 @@ public class Meal {
         this.price = price;
     }
 
+    @Override
+    public boolean equals(Object other){
+        return (other instanceof Meal) && (getID() == ((Meal)other).getID());
+    }
+
+    @Override
+    public int hashCode(){
+        return getID();
+    }
+
+    public int compareTo(Meal other)
+    {
+        return getID() - other.getID();
+    }
 }
