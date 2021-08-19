@@ -3,6 +3,7 @@ import java.io.*;
 import com.example.restaurant_organiser.domain.Meal;
 import java.util.HashMap;
 import java.util.Map;
+import java.net.URL;
 
 /**
  * Class that describes the Repository which deals with memory management
@@ -14,9 +15,14 @@ public class Repository {
                                                               // given that the hashcode is an integer
                                                               // but this way prevents against future changes
 
+    /**
+     * Method that loads data from the specified file which must be in the assets folder of the app
+     * @throws RepositoryException if the file cannot be opened
+     */
     private void loadFromFile() throws RepositoryException {
         try{
-            BufferedReader reader = new BufferedReader(new FileReader(filename));
+            InputStream is = getClass().getClassLoader().getResourceAsStream(filename);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             while (reader.ready()){
                 String id = reader.readLine();
                 String name = reader.readLine();
@@ -32,9 +38,16 @@ public class Repository {
         }
     }
 
+    /**
+     * Method to store current data in the specified file
+     * @throws RepositoryException if the file cannot be opened
+     */
     private void storeToFile() throws RepositoryException {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+            URL resource = getClass().getClassLoader().getResource(filename);   // smelly code to force the app to write
+            String path = resource.getPath();                                   // to resource file to simulate database
+            OutputStream os = new FileOutputStream(path);                       // learning purpose only
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os));
             for (Meal m : data.values()){
                 writer.write(String.valueOf(m.getID()) + "\n");
                 writer.write(m.getName() + "\n");
@@ -48,23 +61,56 @@ public class Repository {
         }
     }
 
+    /**
+     * Constructor for the class Repository
+     * @param file - String which describes the name of the file that will serve as a database
+     * @throws RepositoryException if the file cannot be opened
+     */
     public Repository(String file) throws RepositoryException {
         filename = file;
         loadFromFile();
     }
 
+    /**
+     * Method that adds a new meal to the repository
+     * @param m - Object of type Meal that will be added to the collection
+     * @throws RepositoryException if the file cannot be opened
+     */
     public void addMeal(Meal m) throws RepositoryException {
         data.put(m, m);
         storeToFile();
     }
 
+    /**
+     * Method that deletes a Meal from the repository
+     * @param m - Object of type Meal that will be removed from the collection
+     * @throws RepositoryException if the file cannot be opened
+     */
     public void deleteMeal(Meal m) throws RepositoryException {
         data.remove(m);
         storeToFile();
     }
 
-    public Meal findMeal(int ID){
-        return data.get(new Meal(ID));
+    /**
+     * Method that finds a meal based on ID
+     * @param ID - integer which describes the ID of the Meal searched
+     * @return an object of type Meal whose ID must coincide with ID
+     * @throws RepositoryException if the file cannot be opened
+     */
+    public Meal findMeal(int ID) throws RepositoryException{
+        if (data.containsKey(new Meal(ID)))
+            return data.get(new Meal(ID));
+        else
+            throw new RepositoryException(RepositoryException.findMealMessage);
     }
+
+    /**
+     * Method that finds the number of elements stored in the repository
+     * @return an integer which represents the size of the repository
+     */
+    public int size(){
+        return data.size();
+    }
+
 }
 
