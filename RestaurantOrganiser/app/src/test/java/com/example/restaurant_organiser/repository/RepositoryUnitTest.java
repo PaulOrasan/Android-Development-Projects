@@ -68,4 +68,14 @@ public class RepositoryUnitTest {
             fail();
         }
     }
+
+    @Test
+    public void size(){
+        assertEquals(testRepository.size(), 3);
+    }
+
+    @Test
+    public void getAll(){
+        assertEquals(testRepository.getAll().size(), 3);
+    }
 }

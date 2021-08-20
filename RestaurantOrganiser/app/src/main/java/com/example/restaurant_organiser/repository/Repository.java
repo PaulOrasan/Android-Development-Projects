@@ -1,16 +1,21 @@
 package com.example.restaurant_organiser.repository;
+
 import java.io.*;
 import com.example.restaurant_organiser.domain.Meal;
+
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class that describes the Repository which deals with memory management
  * First iteration: storage done using text files, content loaded into memory
  */
 public class Repository {
-    private String filename;
+    private String filename = "";
     private Map<Meal, Meal> data = new HashMap<Meal, Meal>(); // could have used Map<Integer, Meal> given that
                                                               // given that the hashcode is an integer
                                                               // but this way prevents against future changes
@@ -34,6 +39,9 @@ public class Repository {
             }
             reader.close();
         }catch (IOException e){
+            throw new RepositoryException(RepositoryException.openFileMessage);
+        }
+        catch (java.lang.NullPointerException e){
             throw new RepositoryException(RepositoryException.openFileMessage);
         }
     }
@@ -68,7 +76,8 @@ public class Repository {
      */
     public Repository(String file) throws RepositoryException {
         filename = file;
-        loadFromFile();
+        if (filename != "")
+            loadFromFile();
     }
 
     /**
@@ -78,7 +87,8 @@ public class Repository {
      */
     public void addMeal(Meal m) throws RepositoryException {
         data.put(m, m);
-        storeToFile();
+        if (filename != "")
+            storeToFile();
     }
 
     /**
@@ -88,7 +98,8 @@ public class Repository {
      */
     public void deleteMeal(Meal m) throws RepositoryException {
         data.remove(m);
-        storeToFile();
+        if (filename != "")
+            storeToFile();
     }
 
     /**
@@ -99,7 +110,7 @@ public class Repository {
      */
     public Meal findMeal(int ID) throws RepositoryException{
         if (data.containsKey(new Meal(ID)))
-            return data.get(new Meal(ID));
+            return data.get(new Meal(ID)).clone();
         else
             throw new RepositoryException(RepositoryException.findMealMessage);
     }
@@ -110,6 +121,14 @@ public class Repository {
      */
     public int size(){
         return data.size();
+    }
+
+    /**
+     * Method that finds all the Meals stored in the repository
+     * @return an ArrayList object consisting of all Meals
+     */
+    public List<Meal> getAll(){
+        return Collections.unmodifiableList(new ArrayList<>(data.values()));
     }
 
 }

@@ -1,9 +1,11 @@
 package com.example.restaurant_organiser.domain;
 
+import java.util.Locale;
+
 /**
 Domain class Meal which describes a meal product
  */
-public class Meal implements Comparable<Meal>{
+public class Meal implements Comparable<Meal>, Cloneable{
 
     private int ID;
     private String name, category, description;
@@ -122,5 +124,22 @@ public class Meal implements Comparable<Meal>{
     public int compareTo(Meal other)
     {
         return getID() - other.getID();
+    }
+
+    @Override
+    public Meal clone(){
+        Meal clonedMeal = null;
+        try{
+            clonedMeal = (Meal)super.clone();
+        }catch(CloneNotSupportedException e){
+
+        }
+        return clonedMeal;
+    }
+
+    @Override
+    public String toString(){
+        return String.format(Locale.ENGLISH, "ID: %d\nName: %s\nCategory: %s\nDescription: %s\nPrice: %f\n",
+                getID(), getName(), getCategory(), getDescription(), getPrice());
     }
 }
